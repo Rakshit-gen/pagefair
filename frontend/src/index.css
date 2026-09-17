@@ -42,11 +42,21 @@ header h1 {
 }
 
 header p {
-  margin: 0 0 24px;
+  margin: 0 0 4px;
+}
+
+.export-link {
+  display: inline-block;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 20px;
 }
 
 .uploads {
+  display: flex;
+  gap: 24px;
   margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
 .csv-upload {

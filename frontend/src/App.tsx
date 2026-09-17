@@ -1,19 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
-import { fetchFairness, type EngineerBurden } from "./api";
+import { fairnessExportUrl, fetchFairness, type EngineerBurden } from "./api";
 import { CsvUpload } from "./CsvUpload";
 
 export default function App() {
   const [report, setReport] = useState<EngineerBurden[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [windowDays, setWindowDays] = useState(90);
 
   const reload = useCallback(() => {
     setLoading(true);
-    fetchFairness()
+    fetchFairness(windowDays)
       .then(setReport)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [windowDays]);
 
   useEffect(() => {
     reload();
@@ -26,10 +27,21 @@ export default function App() {
       <header>
         <h1>pagefair</h1>
         <p>On-call burden weighted by severity, off-hours pages, and resolution time.</p>
+        <a className="export-link" href={fairnessExportUrl(windowDays)}>
+          Export report as CSV
+        </a>
       </header>
 
       <section className="uploads">
         <CsvUpload onImported={reload} />
+        <label className="csv-upload">
+          <span>Window</span>
+          <select value={windowDays} onChange={(e) => setWindowDays(Number(e.target.value))}>
+            <option value={30}>Last 30 days</option>
+            <option value={90}>Last 90 days</option>
+            <option value={365}>Last 365 days</option>
+          </select>
+        </label>
       </section>
 
       {error && <p className="error">{error}</p>}

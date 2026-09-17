@@ -9,10 +9,14 @@ export type EngineerBurden = {
   flag: "overloaded" | "underloaded" | "balanced";
 };
 
-export async function fetchFairness(): Promise<EngineerBurden[]> {
-  const res = await fetch(`${API_BASE}/fairness/`);
+export async function fetchFairness(windowDays: number): Promise<EngineerBurden[]> {
+  const res = await fetch(`${API_BASE}/fairness/?window_days=${windowDays}`);
   if (!res.ok) throw new Error(`Failed to load fairness report: ${res.status}`);
   return res.json();
+}
+
+export function fairnessExportUrl(windowDays: number): string {
+  return `${API_BASE}/fairness/export/?window_days=${windowDays}`;
 }
 
 export async function uploadIncidentsCsv(file: File): Promise<number> {
