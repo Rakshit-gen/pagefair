@@ -1,8 +1,10 @@
+import io
 from datetime import timedelta
 
 from django.test import TestCase
 from django.utils import timezone
 
+from .importers import import_incidents_csv
 from .models import Engineer, Incident, Severity
 from .services import compute_fairness
 
@@ -71,3 +73,22 @@ class ComputeFairnessTests(TestCase):
         )
         # base weight 2, plus 4 hours * 0.5 = 2 more
         self.assertEqual(compute_fairness()[0].burden_score, 4.0)
+
+
+class ImportIncidentsCsvTests(TestCase):
+    def test_import_creates_engineer_and_incident(self):
+        csv_file = io.BytesIO(
+            b"engineer_email,engineer_name,title,severity,paged_at,acknowledged_at,resolved_at\n"
+            b"nia@co.com,Night Nia,db down,1,2026-09-01T03:00:00Z,2026-09-01T03:05:00Z,2026-09-01T04:00:00Z\n"
+        )
+        self.assertEqual(import_incidents_csv(csv_file), 1)
+        self.assertEqual(Engineer.objects.get().email, "nia@co.com")
+        self.assertEqual(Incident.objects.get().severity, 1)
+
+    def test_row_with_no_paged_at_is_skipped(self):
+        csv_file = io.BytesIO(
+            b"engineer_email,engineer_name,title,severity,paged_at,acknowledged_at,resolved_at\n"
+            b"nia@co.com,Night Nia,db down,1,,,\n"
+        )
+        self.assertEqual(import_incidents_csv(csv_file), 0)
+        self.assertEqual(Incident.objects.count(), 0)
