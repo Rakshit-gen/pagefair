@@ -1,0 +1,5 @@
+engineer_email,engineer_name,title,severity,paged_at,acknowledged_at,resolved_at
+hank@demo.co,Heavy Hank,overnight db outage,1,2026-09-01T03:00:00Z,2026-09-01T03:05:00Z,2026-09-01T05:00:00Z
+hank@demo.co,Heavy Hank,overnight cache failure,1,2026-09-06T03:30:00Z,2026-09-06T03:40:00Z,2026-09-06T05:30:00Z
+maya@demo.co,Middle Maya,business hours latency spike,2,2026-09-04T14:00:00Z,2026-09-04T14:05:00Z,2026-09-04T14:35:00Z
+liv@demo.co,Light Liv,minor alert noise,4,2026-09-05T10:00:00Z,2026-09-05T10:10:00Z,2026-09-05T10:15:00Z

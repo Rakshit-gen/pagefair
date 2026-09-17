@@ -56,6 +56,10 @@ npm install
 npm run dev
 ```
 
+A sample incident CSV matching the expected columns is in `samples/` —
+upload it through the dashboard, or run `python manage.py seed_demo` for
+an equivalent dataset seeded directly into the database.
+
 ## What's not built
 
 No live PagerDuty/Opsgenie webhook ingestion — this reads CSV exports, not
