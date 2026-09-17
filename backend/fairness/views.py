@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from .importers import import_incidents_csv
 from .models import Engineer, Incident
 from .serializers import EngineerBurdenSerializer, EngineerSerializer, IncidentSerializer
-from .services import compute_fairness
+from .services import WINDOW_DAYS, compute_fairness
 
 
 class EngineerViewSet(viewsets.ModelViewSet):
@@ -21,7 +21,8 @@ class IncidentViewSet(viewsets.ModelViewSet):
 
 class FairnessView(APIView):
     def get(self, request):
-        report = compute_fairness()
+        window_days = int(request.query_params.get("window_days", WINDOW_DAYS))
+        report = compute_fairness(window_days=window_days)
         return Response(EngineerBurdenSerializer(report, many=True).data)
 
 
