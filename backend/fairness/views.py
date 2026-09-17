@@ -1,3 +1,6 @@
+import csv
+
+from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
@@ -24,6 +27,27 @@ class FairnessView(APIView):
         window_days = int(request.query_params.get("window_days", WINDOW_DAYS))
         report = compute_fairness(window_days=window_days)
         return Response(EngineerBurdenSerializer(report, many=True).data)
+
+
+class FairnessCsvView(APIView):
+    """Downloadable copy of the fairness report, for pasting into a rotation review doc."""
+
+    def get(self, request):
+        window_days = int(request.query_params.get("window_days", WINDOW_DAYS))
+        report = compute_fairness(window_days=window_days)
+
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="pagefair_fairness_report.csv"'
+
+        writer = csv.writer(response)
+        writer.writerow(
+            ["engineer_email", "engineer_name", "incident_count", "burden_score", "pct_of_team_average", "flag"]
+        )
+        for r in report:
+            writer.writerow(
+                [r.engineer_email, r.engineer_name, r.incident_count, r.burden_score, r.pct_of_team_average, r.flag]
+            )
+        return response
 
 
 class ImportIncidentsView(APIView):
