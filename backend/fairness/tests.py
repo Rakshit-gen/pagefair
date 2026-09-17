@@ -30,6 +30,15 @@ class ComputeFairnessTests(TestCase):
         )
         self.assertEqual(compute_fairness()[0].incident_count, 0)
 
+    def test_window_days_param_narrows_or_widens_the_lookback(self):
+        eng = Engineer.objects.create(full_name="Mid Mo", email="mo@co.com")
+        Incident.objects.create(
+            engineer=eng, title="50 days ago", severity=Severity.SEV2,
+            paged_at=self.now - timedelta(days=50),
+        )
+        self.assertEqual(compute_fairness(window_days=30)[0].incident_count, 0)
+        self.assertEqual(compute_fairness(window_days=90)[0].incident_count, 1)
+
     def test_off_hours_page_scores_double(self):
         eng = Engineer.objects.create(full_name="Night Nia", email="nia@co.com")
         day_paged = self.now.replace(hour=14)
